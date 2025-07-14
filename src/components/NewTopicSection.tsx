@@ -1,4 +1,3 @@
-import randomInt from "@/utils/randomInt";
 import TopicCard from "./TopicCard";
 
 export default function NewTopicSection() {
@@ -18,27 +17,27 @@ export default function NewTopicSection() {
 
       <div className="w-full grid grid-cols-1 gap-4 sm:grid-cols-2">
         <TopicCard
-          thumbnailSrc={`https://picsum.photos/500?number=${randomInt(100)}`}
+          thumbnailSrc={`https://picsum.photos/500?number=1`}
+          title="Lorem Ipsum eos deserunt veritatis error ut unde assumenda."
+          description="Ut dicta itaque ut nihil. Quo aut provident ut consequuntur et officia laboriosam. Blanditiis distinctio vel nobis quia possimus ullam."
+        />
+        <TopicCard
+          thumbnailSrc={`https://picsum.photos/500?number=2`}
           title="Lorem Ipsum"
           description="Ut dicta itaque ut nihil. Quo aut provident ut consequuntur et officia laboriosam. Blanditiis distinctio vel nobis quia possimus ullam."
         />
         <TopicCard
-          thumbnailSrc={`https://picsum.photos/500?number=${randomInt(100)}`}
+          thumbnailSrc={`https://picsum.photos/500?number=3`}
           title="Lorem Ipsum"
           description="Ut dicta itaque ut nihil. Quo aut provident ut consequuntur et officia laboriosam. Blanditiis distinctio vel nobis quia possimus ullam."
         />
         <TopicCard
-          thumbnailSrc={`https://picsum.photos/500?number=${randomInt(100)}`}
+          thumbnailSrc={`https://picsum.photos/500?number=4`}
           title="Lorem Ipsum"
           description="Ut dicta itaque ut nihil. Quo aut provident ut consequuntur et officia laboriosam. Blanditiis distinctio vel nobis quia possimus ullam."
         />
         <TopicCard
-          thumbnailSrc={`https://picsum.photos/500?number=${randomInt(100)}`}
-          title="Lorem Ipsum"
-          description="Ut dicta itaque ut nihil. Quo aut provident ut consequuntur et officia laboriosam. Blanditiis distinctio vel nobis quia possimus ullam."
-        />
-        <TopicCard
-          thumbnailSrc={`https://picsum.photos/500?number=${randomInt(100)}`}
+          thumbnailSrc={`https://picsum.photos/500?number=5`}
           title="Lorem Ipsum"
           description="Ut dicta itaque ut nihil. Quo aut provident ut consequuntur et officia laboriosam. Blanditiis distinctio vel nobis quia possimus ullam."
         />
