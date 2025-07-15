@@ -1,3 +1,4 @@
+import TextEditor from "@/components/TextEditor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TOPIC_CATEGORY } from "@/constants/category.const";
 
 import { ArrowLeft, Asterisk, Rocket } from "lucide-react";
 
@@ -23,7 +25,7 @@ export default function NewTopicsPage() {
 
       <div className="lg:flex flex-row gap-4">
         {/* 좌측 영역 */}
-        <div className="lg:w-1/3 flex flex-col gap-4 pb-4">
+        <div className="lg:w-1/4 flex flex-col gap-4 pb-4">
           {/* 버튼 영역 */}
           <div className="flex flex-row justify-between gap-2">
             <Button className="dark:bg-neutral-800 dark:text-white">
@@ -46,7 +48,9 @@ export default function NewTopicsPage() {
         </div>
 
         {/* 우측 영역 */}
-        <div className="flex-1">(입력창 영역)</div>
+        <div className="flex-1 min-h-150">
+          <TextEditor />
+        </div>
       </div>
     </form>
   );
@@ -71,13 +75,13 @@ function CategorySelector() {
         <SelectContent>
           <SelectGroup>
             <SelectLabel>토픽 Topic</SelectLabel>
-            <SelectItem value="humanities">인문학</SelectItem>
-            <SelectItem value="startup">스타트업</SelectItem>
-            <SelectItem value="it">IT 프로그래밍</SelectItem>
-            <SelectItem value="strategy">서비스전략 기획</SelectItem>
-            <SelectItem value="marketing">마케팅</SelectItem>
-            <SelectItem value="design">디자인 일러스트</SelectItem>
-            <SelectItem value="self-development">자기계발</SelectItem>
+            {TOPIC_CATEGORY.filter((item) => item.category !== "").map(
+              (category) => (
+                <SelectItem key={category.id} value={category.category}>
+                  {category.label}
+                </SelectItem>
+              ),
+            )}
           </SelectGroup>
         </SelectContent>
       </Select>

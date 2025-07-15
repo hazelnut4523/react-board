@@ -1,12 +1,14 @@
-import LoginCard from "@/components/LoginCard";
-import { ThemeProvider } from "@/components/theme-provider";
+import Layout from "@/Layout";
+import LoginForm from "@/components/login/LoginForm";
 
 export default function LoginPage() {
   return (
-    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-      <div className="page flex justify-center items-center">
-        <LoginCard></LoginCard>
+    <Layout>
+      <div className="flex justify-center items-center min-h-150">
+        <div className="min-w-100">
+          <LoginForm />
+        </div>
       </div>
-    </ThemeProvider>
+    </Layout>
   );
 }

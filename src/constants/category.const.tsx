@@ -21,8 +21,8 @@ export const TOPIC_CATEGORY: TopicCategory[] = [
   { id: 1, label: "전체", category: "", icon: <List /> },
   { id: 2, label: "인문학", category: "huminity", icon: <Lightbulb /> },
   { id: 3, label: "스타트업", category: "startup", icon: <Rocket /> },
-  { id: 4, label: "IT 프로그래밍", category: "it", icon: <CodeXml /> },
-  { id: 5, label: "서비스 전략 기획", category: "service", icon: <Goal /> },
+  { id: 4, label: "IT·프로그래밍", category: "it", icon: <CodeXml /> },
+  { id: 5, label: "서비스·전략 기획", category: "strategy", icon: <Goal /> },
   {
     id: 6,
     label: "마케팅",
@@ -31,7 +31,7 @@ export const TOPIC_CATEGORY: TopicCategory[] = [
   },
   {
     id: 7,
-    label: "디자인 일러스트",
+    label: "디자인·일러스트",
     category: "design",
     icon: <DraftingCompass />,
   },

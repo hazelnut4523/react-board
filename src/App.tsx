@@ -8,6 +8,8 @@ import SignUpPage from "./pages/SignUp";
 import TopicsPage from "./pages/Topics";
 import NewTopicsPage from "./pages/NewTopicsPage";
 import ReadTopicPage from "./pages/ReadTopicPage";
+import Welcome from "./pages/Welcome";
+import { Toaster } from "sonner";
 
 function App() {
   return (
@@ -48,24 +50,12 @@ function App() {
             }
           />
 
-          <Route
-            path="/login"
-            element={
-              <Layout>
-                <LoginPage />
-              </Layout>
-            }
-          />
-          <Route
-            path="/signup"
-            element={
-              <Layout>
-                <SignUpPage />
-              </Layout>
-            }
-          />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
+          <Route path="/welcome" element={<Welcome />} />
         </Routes>
       </BrowserRouter>
+      <Toaster />
     </ThemeProvider>
   );
 }
