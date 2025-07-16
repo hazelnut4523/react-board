@@ -15,8 +15,8 @@ export default function MainHeader() {
         </Link>
 
         <div className="hidden lg:flex flex-row gap-5">
-          <a href="#">클래스</a>
-          <a href="#">배움 노트</a>
+          <Link to="#">클래스</Link>
+          <Link to="#">배움 노트</Link>
 
           <span className="h-6 w-[1px] bg-neutral-600"></span>
 
@@ -24,23 +24,23 @@ export default function MainHeader() {
 
           <span className="h-6 w-[1px] bg-neutral-600"></span>
 
-          <a href="#">밍랩</a>
-          <a href="#">밍고 스테이지</a>
+          <Link to="#">밍랩</Link>
+          <Link to="#">밍고 스테이지</Link>
 
           <span className="h-6 w-[1px] bg-neutral-600"></span>
 
-          <a href="#">밍고 스토어</a>
-          <a href="#">밍거진</a>
+          <Link to="#">밍고 스토어</Link>
+          <Link to="#">밍거진</Link>
         </div>
       </nav>
 
       {/* 헤더 우측 영역 */}
       <nav className="flex flex-row gap-5 items-center">
-        <a href="/login">로그인</a>
+        <Link to="/login">로그인</Link>
         <span className="hidden lg:block h-6 w-[1px] bg-neutral-600"></span>
-        <a href="#" className="hidden lg:block">
+        <Link to="#" className="hidden lg:block">
           우리가 하는 일
-        </a>
+        </Link>
       </nav>
     </header>
   );
