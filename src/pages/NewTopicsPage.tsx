@@ -1,7 +1,5 @@
-import TextEditor from "@/components/TextEditor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -12,92 +10,142 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TOPIC_CATEGORY } from "@/constants/category.const";
-
+import supabase from "@/utils/supabase";
+import { useCreateBlockNote } from "@blocknote/react";
+import { BlockNoteView } from "@blocknote/shadcn";
 import { ArrowLeft, Asterisk, Rocket } from "lucide-react";
+import { useAuthStore } from "@/stores/auth";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
+import { Link } from "react-router-dom";
+import "@blocknote/shadcn/style.css";
+import "@blocknote/core/fonts/inter.css";
 
 export default function NewTopicsPage() {
+  const editor = useCreateBlockNote();
+  const authStore = useAuthStore();
+  const formSchema = z.object({
+    title: z.string(),
+    category: z.enum([
+      "humanities",
+      "startup",
+      "it",
+      "strategy",
+      "marketing",
+      "design",
+      "self-developing",
+    ]),
+  });
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+  });
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const { title, category } = values;
+    await supabase.from("topic").insert({
+      title,
+      category,
+      body: editor.document,
+      author: authStore.user?.id,
+    });
+  }
+
   return (
-    <form className="w-full flex flex-col gap-4">
-      {/* 제목 입력 영역 */}
-      <Input placeholder="토픽 제목을 입력하세요" className="h-14" />
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col gap-4"
+      >
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  className="h-12"
+                  type="text"
+                  placeholder="토픽 제목을 입력하세요"
+                  {...field}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
 
-      <hr />
+        {/* 작성 폼 하단 */}
+        <div className="flex flex-col md:flex-row gap-14">
+          {/* 하단 좌측 영역 */}
+          <div className="flex flex-col gap-4">
+            {/* 버튼 영역 */}
+            <div className="flex flex-row gap-2 justify-between">
+              <Button asChild variant="secondary">
+                <Link to="/topics">
+                  <ArrowLeft />
+                </Link>
+              </Button>
+              <Button variant="secondary">임시 저장</Button>
+              <Button type="submit" className="bg-rose-400 text-white">
+                <Rocket /> 토픽 발행하기
+              </Button>
+            </div>
 
-      <div className="lg:flex flex-row gap-4">
-        {/* 좌측 영역 */}
-        <div className="lg:w-1/4 flex flex-col gap-4 pb-4">
-          {/* 버튼 영역 */}
-          <div className="flex flex-row justify-between gap-2">
-            <Button className="dark:bg-neutral-800 dark:text-white">
-              <ArrowLeft />
-            </Button>
-            <Button className="dark:bg-neutral-800 dark:text-white">
-              임시 저장
-            </Button>
-            <Button className="bg-rose-400 text-white">
-              <Rocket />
-              <span>토픽 발행하기</span>
-            </Button>
+            <hr />
+
+            {/* 카테고리 선택 영역 */}
+            <div>
+              <FormField
+                control={form.control}
+                name="category"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      <Asterisk color="red" /> 카테고리
+                    </FormLabel>
+                    <Select onValueChange={field.onChange}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue
+                          placeholder="주제 선택"
+                          id="category"
+                          aria-required={true}
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>토픽 Topic</SelectLabel>
+                          {TOPIC_CATEGORY.filter(
+                            (item) => item.category !== "",
+                          ).map((category) => (
+                            <SelectItem
+                              key={category.id}
+                              value={category.category}
+                            >
+                              {category.label}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
 
-          <hr />
-
-          <CategorySelector />
-
-          <ThumbnailSelector />
+          {/* 본문 작성 영역 */}
+          <div className="flex-1 min-h-140">
+            <BlockNoteView editor={editor} />
+          </div>
         </div>
-
-        {/* 우측 영역 */}
-        <div className="flex-1 min-h-150">
-          <TextEditor />
-        </div>
-      </div>
-    </form>
-  );
-}
-
-function CategorySelector() {
-  return (
-    <>
-      <Label htmlFor="category">
-        <Asterisk color="red" />
-        카테고리
-      </Label>
-
-      <Select>
-        <SelectTrigger className="w-full">
-          <SelectValue
-            placeholder="주제 선택"
-            id="category"
-            aria-required={true}
-          />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectLabel>토픽 Topic</SelectLabel>
-            {TOPIC_CATEGORY.filter((item) => item.category !== "").map(
-              (category) => (
-                <SelectItem key={category.id} value={category.category}>
-                  {category.label}
-                </SelectItem>
-              ),
-            )}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-    </>
-  );
-}
-
-function ThumbnailSelector() {
-  return (
-    <>
-      <Label htmlFor="thumbnail">
-        <Asterisk color="red" />
-        썸네일
-      </Label>
-
-      <Input type="file" id="thumbnail" />
-    </>
+      </form>
+    </Form>
   );
 }
