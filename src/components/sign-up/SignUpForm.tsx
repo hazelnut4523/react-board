@@ -22,9 +22,11 @@ import supabase from "@/utils/supabase";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useAuthStore } from "@/stores/auth";
 
 export default function SignUpForm() {
   const navigate = useNavigate();
+  const authStore = useAuthStore();
   const formSchema = z.object({
     email: z.email({
       message: "올바른 형식의 이메일 주소를 입력해 주세요.",
@@ -54,8 +56,10 @@ export default function SignUpForm() {
 
     // 회원가입 성공
     if (data.user && data.session) {
+      authStore.setSession(data.session);
+      authStore.setUser(data.user);
       toast.success("회원가입이 완료되었습니다.");
-      navigate("/login");
+      navigate("/welcome");
     }
 
     if (error) {

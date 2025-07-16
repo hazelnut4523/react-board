@@ -1,6 +1,5 @@
 import { ChartNoAxesColumnIncreasing, Heart } from "lucide-react";
 import ProfileCard from "./ProfileCard";
-import randomInt from "@/utils/randomInt";
 import { Link } from "react-router-dom";
 
 interface Property {
@@ -17,10 +16,10 @@ export default function TopicCard(props: Property) {
         <figure className="w-full flex flex-row items-center gap-4">
           <img
             src={props.thumbnailSrc}
-            className="w-30 min-w-30 aspect-square rounded-lg object-cover"
+            className="w-30 min-w-30 aspect-square rounded-lg object-cover bg-accent"
           />
 
-          <figcaption className="h-full flex flex-col justify-between">
+          <figcaption className="h-30 flex flex-col justify-start gap-1">
             <h3 className="text-lg font-semibold tracking-tight line-clamp-2">
               {props.title}
             </h3>
@@ -43,12 +42,12 @@ export default function TopicCard(props: Property) {
           <div className="flex flex-row gap-4 items-center">
             <div className="flex flex-row gap-1 items-center">
               <ChartNoAxesColumnIncreasing />
-              <span>{randomInt(100)}</span>
+              <span>0</span>
             </div>
 
             <div className="flex flex-row gap-1 items-center">
               <Heart className="text-red-500" />
-              <span>{randomInt(100)}</span>
+              <span>0</span>
             </div>
           </div>
         </div>

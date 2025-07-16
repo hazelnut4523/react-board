@@ -1,10 +1,26 @@
 import HotTopics from "@/components/HotTopics";
 import NewTopicSection from "@/components/NewTopicSection";
 import TopicCategory from "@/components/TopicCategory";
+import type { Topic } from "@/types/topic";
+import supabase from "@/utils/supabase";
 import { PencilLine } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 export default function TopicsPage() {
+  const [newTopic, setNewTopic] = useState<Topic[]>([]);
+  useEffect(() => {
+    supabase
+      .from("topic")
+      .select()
+      .limit(5)
+      .then((res) => {
+        console.log(res);
+
+        setNewTopic(res.data);
+      });
+  }, []);
+
   return (
     <div className="relative flex flex-row gap-5">
       <Link
@@ -22,7 +38,7 @@ export default function TopicsPage() {
       <div className="w-full lg:w-3/4 flex flex-col gap-12">
         <HotTopics width={4} />
 
-        <NewTopicSection />
+        <NewTopicSection topics={newTopic ?? []} />
       </div>
     </div>
   );

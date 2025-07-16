@@ -15,9 +15,11 @@ import { Button } from "../ui/button";
 import supabase from "@/utils/supabase";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useAuthStore } from "@/stores/auth";
 
 export default function LoginForm() {
   const navigate = useNavigate();
+  const authStore = useAuthStore();
   const formSchema = z.object({
     email: z.email({
       message: "올바른 형식의 이메일 주소를 입력해 주세요.",
@@ -49,7 +51,9 @@ export default function LoginForm() {
     }
 
     // 로그인 성공
-    if (data.user) {
+    if (data.session && data.user) {
+      authStore.setSession(data.session);
+      authStore.setUser(data.user);
       toast.success("로그인에 성공했습니다.");
       navigate("/");
     }
@@ -66,7 +70,19 @@ export default function LoginForm() {
         <div className="flex flex-col gap-2">
           <Button className="bg-green-600">네이버 로그인</Button>
           <Button className="bg-yellow-500">카카오 로그인</Button>
-          <Button className="">Google 로그인</Button>
+          <Button
+            className=""
+            onClick={() => {
+              supabase.auth.signInWithOAuth({
+                provider: "google",
+                options: {
+                  redirectTo: "/",
+                },
+              });
+            }}
+          >
+            Google 로그인
+          </Button>
         </div>
 
         <Form {...form}>
