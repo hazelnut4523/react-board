@@ -3,6 +3,7 @@ import ProfileCard from "./ProfileCard";
 import { Link } from "react-router-dom";
 
 interface Property {
+  id: string;
   thumbnailSrc: string;
   title: string;
   description: string;
@@ -11,7 +12,7 @@ interface Property {
 export default function TopicCard(props: Property) {
   return (
     <article className="w-full p-4 border border-neutral-600 rounded-lg bg-neutral-900">
-      <Link to="/topics/1" className="flex flex-col gap-4">
+      <Link to={`/topics/${props.id}`} className="flex flex-col gap-4">
         {/* 상단 부분 */}
         <figure className="w-full flex flex-row items-center gap-4">
           <img

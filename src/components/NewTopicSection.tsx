@@ -20,9 +20,10 @@ export default function NewTopicSection(props: { topics: Topic[] }) {
         {props.topics.map((topic, idx) => (
           <TopicCard
             key={idx}
-            thumbnailSrc=""
+            id={topic.id}
+            thumbnailSrc={topic.thumbnail}
             title={topic.title}
-            description="Lorem Ipsum"
+            description={JSON.stringify(topic.body)}
           />
         ))}
       </div>

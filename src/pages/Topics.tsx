@@ -13,7 +13,8 @@ export default function TopicsPage() {
     supabase
       .from("topic")
       .select()
-      .limit(5)
+      .limit(6)
+      .order("upload_date", { ascending: false })
       .then((res) => {
         console.log(res);
 

@@ -25,37 +25,77 @@ import {
   FormItem,
   FormLabel,
 } from "@/components/ui/form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "@blocknote/shadcn/style.css";
 import "@blocknote/core/fonts/inter.css";
+import { ko } from "@blocknote/core/locales";
+import { toast } from "sonner";
 
 export default function NewTopicsPage() {
-  const editor = useCreateBlockNote();
+  const navigate = useNavigate();
+  const editor = useCreateBlockNote({
+    dictionary: ko,
+    uploadFile: async (file: File) => {
+      const uuid = crypto.randomUUID();
+      const { data } = await supabase.storage
+        .from("topics")
+        .upload(`content/${uuid}`, file);
+
+      return `https://lojqxmhfwcsldgeeioxr.supabase.co/storage/v1/object/public/${data?.fullPath}`;
+    },
+  });
   const authStore = useAuthStore();
   const formSchema = z.object({
     title: z.string(),
-    category: z.enum([
-      "humanities",
-      "startup",
-      "it",
-      "strategy",
-      "marketing",
-      "design",
-      "self-developing",
-    ]),
+    category: z.enum(TOPIC_CATEGORY.map((category) => category.category)),
+    thumbnail: z.url().optional(),
   });
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const { title, category } = values;
-    await supabase.from("topic").insert({
-      title,
-      category,
-      body: editor.document,
-      author: authStore.user?.id,
-    });
+    const { title, category, thumbnail } = values;
+
+    console.log(values);
+    console.log(editor.document);
+
+    const { error } = await supabase
+      .from("topic")
+      .insert({
+        title,
+        category,
+        body: editor.document,
+        thumbnail,
+      })
+      .setHeader("Authorization", `bearer ${authStore.session?.access_token}`);
+
+    if (error) {
+      toast.error("토픽 업로드에 실패했습니다.");
+    } else {
+      toast.success("토픽이 성공적으로 업로드되었습니다.");
+      navigate("/topics");
+    }
+  }
+
+  async function uploadThumbnail(
+    file: File | undefined,
+  ): Promise<string | undefined> {
+    if (file === undefined) {
+      return undefined;
+    }
+
+    const uuid = crypto.randomUUID();
+    const ext = file.name.split(".").pop();
+    const { data } = await supabase.storage
+      .from("topics")
+      .upload(`thumbnail/${uuid}.${ext}`, file, {
+        headers: {
+          Authorization: `bearer ${authStore.session?.access_token}`,
+        },
+      });
+
+    return `https://lojqxmhfwcsldgeeioxr.supabase.co/storage/v1/object/public/${data?.fullPath}`;
   }
 
   return (
@@ -71,9 +111,10 @@ export default function NewTopicsPage() {
             <FormItem>
               <FormControl>
                 <Input
-                  className="h-12"
+                  className="h-12 text-lg bg-transparent border-0"
                   type="text"
                   placeholder="토픽 제목을 입력하세요"
+                  required
                   {...field}
                 />
               </FormControl>
@@ -92,7 +133,9 @@ export default function NewTopicsPage() {
                   <ArrowLeft />
                 </Link>
               </Button>
-              <Button variant="secondary">임시 저장</Button>
+              <Button type="button" variant="secondary">
+                임시 저장
+              </Button>
               <Button type="submit" className="bg-rose-400 text-white">
                 <Rocket /> 토픽 발행하기
               </Button>
@@ -138,11 +181,44 @@ export default function NewTopicsPage() {
                 )}
               />
             </div>
+
+            {/* 썸네일 영역 */}
+            <div>
+              <FormField
+                control={form.control}
+                name="thumbnail"
+                render={({ field: { name, onBlur, onChange } }) => (
+                  <FormItem>
+                    <FormLabel>
+                      <Asterisk color="red" /> 썸네일
+                    </FormLabel>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      name={name}
+                      onBlur={onBlur}
+                      onChange={(event) => {
+                        console.log(event.target.files?.[0]);
+                        uploadThumbnail(event.target.files?.[0])
+                          .catch(() => {
+                            toast.error("썸네일 업로드에 실패했습니다.");
+                          })
+                          .then((url) => {
+                            toast.success("썸네일 업로드 성공");
+                            console.log(url);
+                            onChange(url);
+                          });
+                      }}
+                    />
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
 
           {/* 본문 작성 영역 */}
           <div className="flex-1 min-h-140">
-            <BlockNoteView editor={editor} />
+            <BlockNoteView editor={editor} theme="dark" />
           </div>
         </div>
       </form>

@@ -7,4 +7,5 @@ export interface Topic {
   body: Block[];
   author: string;
   category: string;
+  thumbnail: string;
 }
