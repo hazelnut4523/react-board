@@ -33,14 +33,7 @@ function App() {
               </Layout>
             }
           />
-          <Route
-            path="/topics/new-topic"
-            element={
-              <Layout>
-                <NewTopicsPage />
-              </Layout>
-            }
-          />
+          <Route path="/topics/new-topic" element={<NewTopicsPage />} />
           <Route
             path="/topics/:id"
             element={
