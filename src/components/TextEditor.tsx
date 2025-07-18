@@ -20,5 +20,5 @@ export default function TextEditor(props: Props) {
   };
 
   // Renders the editor instance using a React component.
-  return <BlockNoteView editor={editor} onChange={onChange} />;
+  return <BlockNoteView editor={editor} onChange={onChange} theme="dark" />;
 }
