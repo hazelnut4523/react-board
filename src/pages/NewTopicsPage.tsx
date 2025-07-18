@@ -29,20 +29,42 @@ export default function NewTopicsPage() {
   const [title, setTitle] = useState<string>("");
   const [body, setBody] = useState<Block[]>();
   const [category, setCategory] = useState<string>();
-  const [thumbnail, setThumbnail] = useState<File | null>(null);
+  const [thumbnail, setThumbnail] = useState<URL | File | null>(null);
   const authStore = useAuthStore();
   const navigate = useNavigate();
 
   const onSubmit = async () => {
     const uuid = crypto.randomUUID();
+
+    // 입력 했는지 검증
+    if (!title || !body || !category) {
+      if (!title) {
+        toast.error("제목을 입력해주세요.");
+      }
+
+      if (!body) {
+        toast.error("내용을 입력해주세요.");
+      }
+
+      if (!category) {
+        toast.error("카테고리를 선택해주세요.");
+      }
+
+      return;
+    }
+
     // 이미지 버킷에 게시
-    let imageUrl: string | null = null;
+    let imageUrl: URL | null = null;
     if (thumbnail instanceof File) {
       const { data } = await supabase.storage
         .from("topics")
         .upload("thumbnail/" + uuid, thumbnail);
 
-      imageUrl = `https://lojqxmhfwcsldgeeioxr.supabase.co/storage/v1/object/public/${data?.fullPath}`;
+      const rawUrl = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/${data?.fullPath}`;
+      imageUrl = new URL(rawUrl);
+    } else if (thumbnail === null) {
+      toast.error("썸네일을 선택해주세요.");
+      return;
     }
 
     const { error } = await supabase
@@ -51,7 +73,7 @@ export default function NewTopicsPage() {
         title,
         body,
         category,
-        thumbnail: imageUrl,
+        thumbnail: imageUrl?.toString(),
       })
       .select()
       .setHeader("Authorization", "bearer " + authStore.session?.access_token);
