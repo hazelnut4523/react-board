@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Image, ImageOff } from "lucide-react";
@@ -79,7 +79,7 @@ export default function ImageUpload(props: Props) {
 
   return (
     <div>
-      <ThumbnailPreview />
+      {useMemo(() => ThumbnailPreview(), [file])}
 
       <Input
         type="file"
