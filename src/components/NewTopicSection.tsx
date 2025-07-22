@@ -23,7 +23,7 @@ export default function NewTopicSection(props: { topics: Topic[] }) {
             id={topic.id}
             thumbnailSrc={topic.thumbnail}
             title={topic.title}
-            description={JSON.stringify(topic.body)}
+            description={topic.body}
           />
         ))}
       </div>

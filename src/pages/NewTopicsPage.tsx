@@ -1,6 +1,17 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
   Select,
   SelectContent,
   SelectGroup,
@@ -11,7 +22,7 @@ import {
 } from "@/components/ui/select";
 import { TOPIC_CATEGORY } from "@/constants/category.const";
 import supabase from "@/utils/supabase";
-import { ArrowLeft, Asterisk, Rocket } from "lucide-react";
+import { ArrowLeft, Asterisk, Rocket, Trash2Icon } from "lucide-react";
 import { useAuthStore } from "@/stores/auth";
 import { useNavigate } from "react-router-dom";
 import "@blocknote/shadcn/style.css";
@@ -86,6 +97,47 @@ export default function NewTopicsPage() {
     }
   };
 
+  const uploadFile = async (file: File): Promise<string> => {
+    const uuid = crypto.randomUUID();
+    const { data } = await supabase.storage
+      .from("topics")
+      .upload("content/" + uuid, file, {
+        headers: {
+          Authorization: `Bearer ${authStore.session?.access_token}`,
+        },
+      });
+
+    return `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/${data?.fullPath}`;
+  };
+
+  const BackButton = () => (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="secondary">
+          <ArrowLeft />
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>기록했던 내용을 잃게 됩니다.</AlertDialogTitle>
+          <AlertDialogDescription>
+            그래도 뒤로가시겠습니까?
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>취소</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => {
+              navigate("/topics");
+            }}
+          >
+            뒤로가기
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+
   return (
     <Layout>
       <div className="flex flex-col gap-8">
@@ -105,9 +157,7 @@ export default function NewTopicsPage() {
           <div className="flex flex-col gap-4 w-full md:w-1/3">
             {/* 버튼 영역 */}
             <div className="flex flex-row gap-2 justify-between">
-              <Button variant="secondary">
-                <ArrowLeft />
-              </Button>
+              <BackButton />
               <Button variant="secondary">임시 저장</Button>
               <Button className="bg-rose-500 text-white" onClick={onSubmit}>
                 <Rocket /> 토픽 발행하기
@@ -158,7 +208,10 @@ export default function NewTopicsPage() {
 
           {/* 우측 영역 */}
           <div className="flex-1 min-h-150">
-            <TextEditor onChange={(document) => setBody(document)} />
+            <TextEditor
+              onChange={(document) => setBody(document)}
+              uploadFile={uploadFile}
+            />
           </div>
         </div>
       </div>

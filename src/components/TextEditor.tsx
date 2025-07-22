@@ -7,16 +7,21 @@ import type { Block } from "@blocknote/core";
 
 interface Props {
   onChange?: (document: Block[]) => void;
+  uploadFile?: (
+    file: File,
+    blockId?: string,
+  ) => Promise<string | Record<string, any>>;
 }
 
 export default function TextEditor(props: Props) {
   // Creates a new editor instance.
   const editor = useCreateBlockNote({
     dictionary: ko,
+    uploadFile: props.uploadFile,
   });
 
   const onChange = () => {
-    props.onChange(editor.document);
+    if (props.onChange) props.onChange(editor.document);
   };
 
   // Renders the editor instance using a React component.

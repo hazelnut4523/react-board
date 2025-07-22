@@ -1,12 +1,22 @@
 import { ChartNoAxesColumnIncreasing, Heart } from "lucide-react";
 import ProfileCard from "./ProfileCard";
 import { Link } from "react-router-dom";
+import type { Block } from "@blocknote/core";
 
 interface Property {
   id: string;
   thumbnailSrc: string;
   title: string;
-  description: string;
+  description: Block[];
+}
+
+function description(blocks: Block[]): string {
+  return blocks
+    .filter((block) => block.type === "paragraph" || block.type === "heading")
+    .map((block) => block.content)
+    .flat()
+    .map((content) => content.text)
+    .join(" ");
 }
 
 export default function TopicCard(props: Property) {
@@ -26,7 +36,7 @@ export default function TopicCard(props: Property) {
             </h3>
 
             <span className="text-neutral-500 tracking-tight line-clamp-3">
-              {props.description}
+              {description(props.description)}
             </span>
           </figcaption>
         </figure>

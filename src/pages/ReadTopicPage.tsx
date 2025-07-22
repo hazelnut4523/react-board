@@ -1,17 +1,34 @@
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import ProfileCardLarge from "@/components/ProfileCardLarge";
 import type { Topic } from "@/types/topic";
 import supabase from "@/utils/supabase";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/shadcn/style.css";
+import { Button } from "@/components/ui/button";
+import { Trash2Icon } from "lucide-react";
+import { useAuthStore } from "@/stores/auth";
+import { toast } from "sonner";
 
 export default function ReadTopicPage() {
   const { id } = useParams();
+  const authStore = useAuthStore();
   const [topic, setTopic] = useState<Topic>();
   const editor = useCreateBlockNote();
+  const navigate = useNavigate();
 
   useEffect(() => {
     supabase
@@ -26,6 +43,47 @@ export default function ReadTopicPage() {
       });
   }, [id]);
 
+  const deleteTopic = async () => {
+    const { data, error } = await supabase
+      .from("topic")
+      .delete()
+      .eq("id", id)
+      .select()
+      .setHeader("Authorization", `bearer ${authStore.session?.access_token}`);
+
+    if (error) {
+      toast.error("게시물이 삭제되지 않았습니다.");
+    } else {
+      console.log(error, data);
+      toast.success("게시물이 삭제되었습니다.");
+      navigate("/topics");
+    }
+  };
+
+  const DeleteButton = () => (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="destructive">
+          <Trash2Icon />
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>삭제하시겠습니까?</AlertDialogTitle>
+          <AlertDialogDescription>
+            이 작업은 되돌릴 수 없습니다.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>취소</AlertDialogCancel>
+          <AlertDialogAction onClick={() => deleteTopic()}>
+            삭제하기
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+
   return (
     <div className="flex flex-col gap-4">
       <TopicHeader
@@ -37,6 +95,8 @@ export default function ReadTopicPage() {
       <div className="flex flex-row gap-4">
         <div className="flex-1">
           <BlockNoteView editor={editor} theme="dark" editable={false} />
+
+          {authStore.user?.id === topic?.author && <DeleteButton />}
         </div>
 
         <div className="w-1/4">
